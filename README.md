@@ -1,4 +1,4 @@
-### stream-analytics-grp-1
+# stream-analytics-grp-1
 
 ## Project overview
 
@@ -7,4 +7,5 @@
 
 
 ## Design note 
-# Describes fields, events, assumptions, and planned analytics
+
+### Describes fields, events, assumptions, and planned analytics
