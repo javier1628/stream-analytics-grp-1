@@ -1,0 +1,19 @@
+# -------------------------
+# Generated sample data
+# -------------------------
+sample_data/
+generator/sample_data/
+
+# JSONL outputs
+*.jsonl
+
+# AVRO outputs
+*.avro
+
+# Python virtual env
+venv/
+__pycache__/
+*.pyc
+
+# Mac
+.DS_Store

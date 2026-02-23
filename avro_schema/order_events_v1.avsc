@@ -1,0 +1,94 @@
+{
+  "type": "record",
+  "name": "OrderEvent",
+  "namespace": "com.seniorsync.fooddelivery.v1",
+  "doc": "Order lifecycle events for synthetic on-demand food delivery platform (v1). One schema per topic; event semantics defined by event_type.",
+  "fields": [
+    {
+      "name": "schema_version",
+      "type": "int",
+      "doc": "Schema version for forward/backward compatibility.",
+      "default": 1
+    },
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "Globally unique event identifier. Duplicates reuse the same event_id."
+    },
+    {
+      "name": "event_ts_ms",
+      "type": { "type": "long", "logicalType": "timestamp-millis" },
+      "doc": "Event-time timestamp in epoch milliseconds (used for windowing/watermarks)."
+    },
+    {
+      "name": "order_id",
+      "type": "string",
+      "doc": "Unique order identifier (primary join key)."
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "OrderEventType",
+        "symbols": [
+          "CREATED",
+          "ASSIGNED",
+          "ACCEPTED",
+          "PREPARING",
+          "READY",
+          "PICKED_UP",
+          "DELIVERED",
+          "CANCELLED",
+          "FAILED",
+          "REFUNDED"
+        ]
+      },
+      "doc": "Order lifecycle event type."
+    },
+    {
+      "name": "zone_id",
+      "type": "string",
+      "doc": "Geographic zone identifier (used for aggregation/heatmaps)."
+    },
+    {
+      "name": "restaurant_id",
+      "type": "string",
+      "doc": "Restaurant fulfilling the order."
+    },
+    {
+      "name": "customer_id",
+      "type": "string",
+      "doc": "Customer placing the order."
+    },
+    {
+      "name": "courier_id",
+      "type": ["null", "string"],
+      "doc": "Courier assigned to the order. Typically null until ASSIGNED (or beyond).",
+      "default": null
+    },
+    {
+      "name": "order_value_cents",
+      "type": ["null", "int"],
+      "doc": "Optional: order subtotal/value in cents. Included for potential future revenue analytics.",
+      "default": null
+    },
+    {
+      "name": "currency",
+      "type": ["null", "string"],
+      "doc": "Optional: ISO currency code (e.g., EUR).",
+      "default": null
+    },
+    {
+      "name": "cancel_reason",
+      "type": ["null", "string"],
+      "doc": "Optional: reason code/string when event_type=CANCELLED (e.g., CUSTOMER_CHANGED_MIND).",
+      "default": null
+    },
+    {
+      "name": "fail_reason",
+      "type": ["null", "string"],
+      "doc": "Optional: reason code/string when event_type=FAILED (e.g., RESTAURANT_CLOSED, COURIER_NO_SHOW).",
+      "default": null
+    }
+  ]
+}

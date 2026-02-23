@@ -1,0 +1,45 @@
+seed: 42
+
+simulation:
+  start_ts_ms: 1730000000000   # optional fixed start for reproducibility
+  tick_ms: 1000
+  duration_s: 3600
+  emit_to: "sample_data/json"  # output folder
+
+entities:
+  num_zones: 12
+  num_restaurants: 60
+  num_couriers: 120
+
+demand:
+  base_orders_per_min: 25
+  zone_skew_alpha: 1.3
+  weekday_multiplier: 1.0
+  weekend_multiplier: 1.2
+  lunch_peak:
+    start_hour: 12
+    end_hour: 14
+    multiplier: 1.6
+  dinner_peak:
+    start_hour: 19
+    end_hour: 21
+    multiplier: 1.8
+  surge:
+    enabled: true
+    start_minute: 120
+    end_minute: 150
+    multiplier: 2.0
+
+behavior:
+  cancel_probability: 0.06
+  fail_probability: 0.01
+  refund_probability_given_cancel_or_fail: 0.15
+
+edge_cases:
+  duplicate_probability: 0.005
+  late_event_probability: 0.05
+  late_event_max_delay_s: 600
+  missing_step_probability: 0.3
+  impossible_duration_probability: 0.003
+  courier_offline_mid_delivery_probability: 0.005
+  courier_recover_probability: 0.05

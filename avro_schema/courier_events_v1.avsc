@@ -1,0 +1,54 @@
+{
+  "type": "record",
+  "name": "CourierEvent",
+  "namespace": "com.seniorsync.fooddelivery.v1",
+  "doc": "Courier availability and assignment events for synthetic on-demand food delivery platform (v1). One schema per topic; semantics defined by status.",
+  "fields": [
+    {
+      "name": "schema_version",
+      "type": "int",
+      "doc": "Schema version for forward/backward compatibility.",
+      "default": 1
+    },
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "Globally unique event identifier. Duplicates reuse the same event_id."
+    },
+    {
+      "name": "event_ts_ms",
+      "type": { "type": "long", "logicalType": "timestamp-millis" },
+      "doc": "Event-time timestamp in epoch milliseconds (used for windowing/watermarks)."
+    },
+    {
+      "name": "courier_id",
+      "type": "string",
+      "doc": "Unique courier identifier (primary join key for sessions)."
+    },
+    {
+      "name": "zone_id",
+      "type": "string",
+      "doc": "Courier zone at event time."
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "CourierStatus",
+        "symbols": [
+          "ONLINE",
+          "OFFLINE",
+          "IDLE",
+          "ASSIGNED"
+        ]
+      },
+      "doc": "Courier operational status (minimal model). ONLINE/OFFLINE support session windows."
+    },
+    {
+      "name": "order_id",
+      "type": ["null", "string"],
+      "doc": "Associated order identifier when status relates to a job (e.g., ASSIGNED).",
+      "default": null
+    }
+  ]
+}
