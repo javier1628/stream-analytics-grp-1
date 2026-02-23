@@ -208,3 +208,59 @@ Verify schema file paths are correct
 Ensure fastavro is installed
 
 Ensure output directories exist
+
+### 2. Validator test to check for data correctness
+
+Validate JSONL (default paths)
+
+If you generated JSON to the default locations, you can simply run:
+```bash
+python validate_output.py
+```
+Defaults:
+```bash
+--json-order sample_data/json/order_events.jsonl
+
+--json-courier sample_data/json/courier_events.jsonl
+```
+Validate JSONL with explicit paths
+```bash
+python validate_output.py \
+  --json-order path/to/order_events.jsonl \
+  --json-courier path/to/courier_events.jsonl
+```
+Validate JSONL + AVRO files
+```bash
+python validate_output.py \
+  --json-order sample_data/json/order_events.jsonl \
+  --json-courier sample_data/json/courier_events.jsonl \
+  --avro-order sample_data/avro/order_events_0001.avro \
+  --avro-courier sample_data/avro/courier_events_0001.avro
+  ```
+Validate a directory of AVRO files
+
+You may pass a directory instead of a single file. The script will:
+
+Prefer files containing the feed hint in the filename (*order*.avro or *courier*.avro)
+
+Otherwise, read all *.avro files in the directory
+```bash
+python validate_output.py \
+  --avro-order sample_data/avro \
+  --avro-courier sample_data/avro
+```
+
+Output format
+
+The script prints a report like:
+```bash
+PASS <check name> - <details>
+
+FAIL <check name> - <details>
+```
+It may also print a WARNINGS section (e.g., if JSON vs AVRO record counts differ).
+
+At the end:
+```bash
+Checks: <N> | Failures: <M> | Warnings: <K>
+```
