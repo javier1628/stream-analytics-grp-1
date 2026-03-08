@@ -1,0 +1,118 @@
+{
+  "type": "record",
+  "name": "OrderLifecycleEvent",
+  "namespace": "com.fooddelivery.streams.v1",
+  "doc": "Represents a single state transition in the lifecycle of a food delivery order.",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "UUID v4. Unique per emission — used for deduplication."
+    },
+    {
+      "name": "order_id",
+      "type": "string",
+      "doc": "UUID v4. Links all events belonging to the same order. Primary join key with Restaurant Events feed."
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "OrderEventType",
+        "symbols": [
+          "PLACED",
+          "ACCEPTED",
+          "PREPARING",
+          "READY_FOR_PICKUP",
+          "PICKED_UP",
+          "DELIVERED",
+          "CANCELLED"
+        ],
+        "doc": "Finite state machine transitions for an order lifecycle."
+      },
+      "doc": "The lifecycle state this event represents."
+    },
+    {
+      "name": "event_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Event time in epoch milliseconds — when the state transition actually occurred. Authoritative timestamp for all windowing operations."
+    },
+    {
+      "name": "ingestion_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Wall-clock time when the event was emitted to the stream. Used to measure broker lag vs event_time."
+    },
+    {
+      "name": "customer_id",
+      "type": "string",
+      "doc": "Anonymised customer identifier. Used for fraud/refund heuristics in downstream processing."
+    },
+    {
+      "name": "restaurant_id",
+      "type": "string",
+      "doc": "Restaurant identifier. Foreign key — links to restaurant reference data and Restaurant Events feed."
+    },
+    {
+      "name": "courier_id",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Assigned courier identifier. Null before ACCEPTED/PREPARING; populated from READY_FOR_PICKUP onward."
+    },
+    {
+      "name": "zone_id",
+      "type": "string",
+      "doc": "Geographic delivery zone (e.g. ZONE_CENTRO). Enables zone-level aggregations and anomaly detection."
+    },
+    {
+      "name": "order_value_eur",
+      "type": "float",
+      "doc": "Gross order value in EUR at time of placement."
+    },
+    {
+      "name": "item_count",
+      "type": "int",
+      "doc": "Number of distinct line items in the order."
+    },
+    {
+      "name": "promo_applied",
+      "type": "boolean",
+      "default": false,
+      "doc": "Whether a promotional discount was applied to this order."
+    },
+    {
+      "name": "promo_code",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Promotion code string if promo_applied is true; null otherwise."
+    },
+    {
+      "name": "cancellation_reason",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Free-text reason code populated only on CANCELLED events (e.g. CUSTOMER_REQUEST, RESTAURANT_UNAVAILABLE, COURIER_TIMEOUT)."
+    },
+    {
+      "name": "device_id",
+      "type": "string",
+      "doc": "Hashed device fingerprint of the customer. Used for fraud cluster detection across orders."
+    },
+    {
+      "name": "is_anomaly",
+      "type": "boolean",
+      "default": false,
+      "doc": "Generator flag: marks intentionally injected anomalous events (missing steps, impossible durations). For testing only."
+    },
+    {
+      "name": "schema_version",
+      "type": "string",
+      "default": "1.0",
+      "doc": "Schema version string for forward/backward compatibility tracking."
+    }
+  ]
+}
