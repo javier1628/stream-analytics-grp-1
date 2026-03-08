@@ -1,0 +1,121 @@
+{
+  "type": "record",
+  "name": "RestaurantEvent",
+  "namespace": "com.fooddelivery.streams.v1",
+  "doc": "Captures operational milestones from the restaurant perspective: order acknowledgement, kitchen preparation progress, SLA breaches, and capacity signals.",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "UUID v4. Unique per emission — used for deduplication."
+    },
+    {
+      "name": "order_id",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "UUID v4. Join key linking back to Order Lifecycle feed. Null for capacity-only signals (RESTAURANT_BUSY, RESTAURANT_AVAILABLE) that are not order-bound."
+    },
+    {
+      "name": "restaurant_id",
+      "type": "string",
+      "doc": "Restaurant identifier. Primary key for restaurant-level aggregations."
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "RestaurantEventType",
+        "symbols": [
+          "ORDER_RECEIVED",
+          "PREP_STARTED",
+          "PREP_COMPLETE",
+          "HANDOFF_TO_COURIER",
+          "SLA_BREACH",
+          "RESTAURANT_BUSY",
+          "RESTAURANT_AVAILABLE"
+        ],
+        "doc": "Kitchen and capacity milestones for a restaurant."
+      },
+      "doc": "The operational milestone this event represents."
+    },
+    {
+      "name": "event_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Event time in epoch milliseconds — when the milestone occurred at the restaurant. Authoritative timestamp for windowing."
+    },
+    {
+      "name": "ingestion_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Emission timestamp. Used to compute kitchen-tablet-to-broker latency."
+    },
+    {
+      "name": "zone_id",
+      "type": "string",
+      "doc": "Zone the restaurant belongs to. Enables zone-level demand-supply health metrics."
+    },
+    {
+      "name": "prep_duration_seconds",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Elapsed seconds from PREP_STARTED to PREP_COMPLETE. Populated only on PREP_COMPLETE events. Null otherwise. Values > 3600 are injected as anomalies."
+    },
+    {
+      "name": "sla_threshold_seconds",
+      "type": "int",
+      "doc": "Maximum allowed preparation time in seconds for this restaurant tier (e.g. 900 = 15 min). Embedded per event to allow per-restaurant SLA variation without a reference table lookup."
+    },
+    {
+      "name": "queue_depth",
+      "type": "int",
+      "doc": "Number of active orders in the kitchen at the time of this event. Used for demand-supply health scoring."
+    },
+    {
+      "name": "capacity_pct",
+      "type": "float",
+      "doc": "Estimated kitchen load as a fraction 0.0–1.0. Values > 0.9 indicate overload."
+    },
+    {
+      "name": "cuisine_type",
+      "type": {
+        "type": "enum",
+        "name": "CuisineType",
+        "symbols": [
+          "PIZZA",
+          "SUSHI",
+          "BURGER",
+          "SALAD",
+          "PASTA",
+          "INDIAN",
+          "MEXICAN",
+          "CHINESE",
+          "OTHER"
+        ]
+      },
+      "doc": "Cuisine category. Enables segment-level analytics (e.g. avg prep time by cuisine)."
+    },
+    {
+      "name": "is_partner_restaurant",
+      "type": "boolean",
+      "default": false,
+      "doc": "True if the restaurant is on the priority SLA tier with stricter breach thresholds."
+    },
+    {
+      "name": "is_anomaly",
+      "type": "boolean",
+      "default": false,
+      "doc": "Generator flag: marks intentionally injected anomalous events. For testing only."
+    },
+    {
+      "name": "schema_version",
+      "type": "string",
+      "default": "1.0",
+      "doc": "Schema version string for forward/backward compatibility tracking."
+    }
+  ]
+}
