@@ -1,4 +1,4 @@
-# 🍕 Real-Time Food Delivery Stream Analytics
+# Real-Time Food Delivery Stream Analytics
 
 **IE University — Stream Analytics · Spring 2026 · Group Project**
 
