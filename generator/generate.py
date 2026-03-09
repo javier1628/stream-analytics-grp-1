@@ -182,7 +182,7 @@ def main() -> None:
     schedule       = orders_per_minute(args.orders, args.duration_minutes,
                                        args.start_hour, args.weekend)
 
-    print(f"\n🍕  Food Delivery Stream Generator")
+    print(f"\n  Food Delivery Stream Generator")
     print(f"    Orders:      {args.orders}")
     print(f"    Restaurants: {args.restaurants}  |  Couriers: {args.couriers}")
     print(f"    Zones:       {zones}")
@@ -275,7 +275,7 @@ def main() -> None:
     anomalies  = sum(1 for e in order_events + restaurant_events if e.get("is_anomaly"))
     sla_breach = sum(1 for e in restaurant_events if e["event_type"] == "SLA_BREACH")
 
-    print(f"\n✅  Done!")
+    print(f"\n  Done!")
     print(f"    Order events:      {len(order_events)}")
     print(f"    Restaurant events: {len(restaurant_events)}")
     print(f"    Cancellations:     {cancelled}")
