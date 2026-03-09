@@ -107,7 +107,7 @@ generator/
 
 ## Output Format Notes
 
-**JSON**: Pretty-printed array of event objects. One file per feed.  
+**JSON**: Array of event objects. One file per feed.  
 **AVRO**: Binary Avro container file. Schemas are read from `../schemas/`.  
 Both formats follow the same field names and types as defined in the AVRO schemas.
 
