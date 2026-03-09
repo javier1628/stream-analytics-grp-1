@@ -3,11 +3,6 @@
 ## Project Overview
 This project simulates a real-time food delivery ecosystem to enable stream analytics on order lifecycles and restaurant operations.
 
-**Team Structure:**
-- **Lead Data Engineer:** [Name]
-- **Stream Processing Specialist:** [Name]
-- **Analytics Engineer:** [Name]
-
 ---
 
 ## Feed Justification & Analytics
