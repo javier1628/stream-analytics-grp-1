@@ -1,7 +1,7 @@
 # Milestone 1: Food Delivery Stream Analytics
 
 ## Project Overview
-This project simulates a real-time food delivery ecosystem to enable stream analytics on order lifecycles and restaurant operations.
+Table Streaming Project Goal: Set up a real time food delivery system to do stream analytics on the order life cycle and on the restaurant operations.
 
 **Team Structure:**
 - **Lead Data Engineer:** [Name]
@@ -13,31 +13,31 @@ This project simulates a real-time food delivery ecosystem to enable stream anal
 ## Feed Justification & Analytics
 
 ### 1. Order Lifecycle Feed (`order_lifecycle`)
-- **Justification:** Captures the end-to-end journey of a customer order (PLACED → ACCEPTED → PREPARING → PICKED_UP → DELIVERED/CANCELLED). Essential for tracking customer experience and logistics efficiency.
-- **Analytics enabled:** 
-  - **Delivery Time Distribution:** Real-time monitoring of average delivery times.
-  - **Cancellation Rates:** Identifying spikes in cancellations by zone or time.
-  - **Zone Surge Detection:** Detecting high-demand areas to dynamically adjust courier allocation.
+- **Status Justification:** This status reflects the entire workflow of a customer order from PLACED → ACCEPTED → PREPARING → PICKED_UP to DELIVERED/CANCELLED. It is of high importance for the customer satisfaction and the efficiency of the logistics processes.
+- **Analytics enabled:**
+- **Delivery Time Distribution:** Real-time monitoring of average delivery times.
+- **Cancellation Rates:** Identifying spikes in cancellations by zone or time.
+- **Zone Surge Detection:** Detecting high-demand areas to dynamically adjust courier allocation.
 
 ### 2. Restaurant Events Feed (`restaurant_events`)
-- **Justification:** Focuses on the "black box" of the kitchen (PREP_STARTED → PREP_COMPLETE) and restaurant-level signals (SLA_BREACH, CAPACITY_CHANGE). Essential for operational efficiency and partner management.
+- **Justification:** The focus should be on the “black box” of the kitchen (PREP_STARTED → PREP_COMPLETE) and on the high level signals in the restaurant (SLA_BREACH, CAPACITY_CHANGE).
 - **Analytics enabled:**
-  - **Prep SLA Monitoring:** Identifying restaurants consistently breaching preparation time agreements.
-  - **Kitchen Throughput:** Measuring real-time capacity and bottlenecks.
-  - **Anomaly Detection:** Identifying impossible preparation durations or skipped operational steps.
+- **Prep SLA Monitoring:** Identifying restaurants consistently breaching preparation time agreements.
+- **Kitchen Throughput:** Measuring real-time capacity and bottlenecks.
+- **Anomaly Detection:** Identifying impossible preparation durations or skipped operational steps.
 
 ---
 
 ## Event-Time & Late Data Handling
 
-To support robust stream processing (e.g., in Apache Flink or Spark Streaming), every event includes:
-- **`event_time`**: The UTC epoch milliseconds when the event *actually occurred* in the simulation. This is the primary field for **watermarking** and windowing.
+Watermarks and Event Time for Robust Stream Processing It is assumed that for real-time data processing every event in a stream must have a watermark and an event time. In the following we give a short overview which information must be contained in each event.
+- **`event_time`**: The UTC epoch milliseconds when the event *actually occurred* in the simulation. The main field to use for watermarking and windowing.
 - **`ingestion_time`**: The time the event was emitted by the generator.
 
 ### Handling Watermarks & Late Data:
-- **Out-of-Order Events:** The generator injects ~5% out-of-order events (where `event_time` < previous event's `event_time`). This tests the pipeline's ability to handle late-arriving data using watermarks.
-- **Duplicates:** ~2% of events are duplicated to test idempotent processing and deduplication logic.
-- **Watermarks:** Analytics pipelines should use `event_time` with a reasonable delay (e.g., 5-10 seconds) to allow for the late data injected by this generator.
+- **Out-of-Order Events:** We are generating around ~5% out-of-order events (where `event_time` < previous event's `event_time`). This is to test the use of watermarks in handling late events in the stream.
+- **Duplicates:** About 2% of the events are duplicated in order to verify the idempotence of the processing and to check the deduplication.
+- **Watermarks:** We should use the event_time with a small offset, e.g. 5-10 seconds, in order to be able to handle the late data injected by this source.
 
 ---
 
@@ -90,12 +90,12 @@ python generate.py --orders 500 --duration 60 --format both --verify
 ## Assumptions & Planned Analytics
 
 ### Assumptions:
-1. **Network Latency:** Simulated via out-of-order `event_time` vs `ingestion_time`.
-2. **Zone-based Demand:** Demand is skewed towards `ZONE_CENTRO` by default.
-3. **Courier Availability:** Simulated pool of couriers that can be temporarily overloaded during surges.
+1. ** Network Latency:** Simulated via out-of-order `event_time` vs `ingestion_time`.
+2. ** Zone-based Demand:** Demand is skewed towards `ZONE_CENTRO` by default.
+Challenge 3: 3D Courier Availability A simulation model of a pool of couriers available to act as 3D courier delivery drivers, with the pool potentially becoming temporarily saturated with drivers during peak surge periods.
 
 ### Planned Analytics:
-- **SLA Breach Detection:** Real-time alerts when a restaurant exceeds its preparation time.
-- **Delivery Time Prediction:** Using current prep times and zone congestion to estimate delivery.
-- **Anomaly Detection:** Identifying fraudulent or impossible event sequences (e.g., delivered before picked up).
-- **Zone Performance:** Comparative analysis of cancellation rates and delivery times across different geographic zones.
+- **SLA Breach Detection:** Will send real time alerts to the restaurant when the SLA for preparation time is breached.
+- **Delivery Time Prediction** - Estimate the delivery time based on prep time history and real time zone congestion.
+- **Anomaly Detection:** This type of detection uncovers clearly fraudulent or clearly impossible events in the event stream e.g. something being delivered before it being picked up.
+- **Zone Performance:** A comparison of cancellation rates and delivery times per zone.
